@@ -1608,7 +1608,7 @@ map <Leader>z :ZoomWinTabToggle<CR>
 " DJANGO HTML (Templates) {{{
 
 au BufRead,BufNewFile */templates/*.html setlocal filetype=htmldjango.html
-
+au BufRead,BufNewFile *.html set nowrap
 " }}}
 
 " JSON {{{ -------------------------------------------------------------------
