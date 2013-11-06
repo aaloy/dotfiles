@@ -1,7 +1,7 @@
 # My Vim Configuration
 
 
-__Version 1.3  (2013-08-19)__
+__Version 1.4  (2013-08-26)__
 
 The purpose of this document is to compile all the customizations available in
 my vim configuration, to help me reorganize them properly, and as a sort of
@@ -14,7 +14,8 @@ configuration.
 Due to the "dynamic" nature of my configuration, this document is under a lot of
 stress. It changes frequently and it's better if you watch the DVCS commits to
 stay in the loop. Also, some images may be outdated with respect to the current
-configuraton.
+configuration (also in GitHub the images are cached and maybe do not correspond
+with the current version of the image).
 
 To all this we must add everything that Vim provides by default, which is no
 small service.
@@ -97,13 +98,6 @@ intuitive and easy to navigate.*
 ![unite menu](http://joedicastro.com/static/pictures/unite_menu_en.png "unite menu")
 
 ### Navigation inside Unite
-
-In the Powerline theme I'm using there is a circle after the candidates number
-that shows the current mode following these criteria:
-
- - __Green:__    normal mode
- - __Blue:__     insert mode
- - __Orange:__   visual mode
 
 These are some of the available mappings:
 
@@ -292,19 +286,6 @@ __Unite__
 - *delete buffer* delete a buffer
 
 
-## Sessions
-
-![unite sessions](http://joedicastro.com/static/pictures/unite_menu_sessions.png "unite sessions")
-
-This menu manages the Vim sessions. We can store them as the default session or
-we can give them a custom name. If we load one session we can continue working
-in the same point where we were when it was saved.
-
-__Unite__
-
-`<LocalLeader>h` or `:Unite menu:sessions` shows the sessions menu
-
-
 ## Bookmarks
 
 ![unite bookmarks](http://joedicastro.com/static/pictures/unite_menu_bookmarks.png "unite bookmarks")
@@ -429,14 +410,14 @@ easily.
     > - `d<C-A>` Change the time under the cursor to the current UTC time
     > - `d<C-X>` Change the time under the cursor to the current Local time
 
-- __vim-smartinput__ provides smart auto-completion for delimiters like
+- __delimitMate__ provides smart auto-completion for delimiters like
   __(), {}, [], "", '', ``__
 
     This is very easy to use. If we write the first pair of these chars, then
     the second one is automatically introduced and the cursor moves to the
     interior thereof. Then, we continue writing and to exit the inside you only
-    have to write the second character. If you only want the first char, you
-    only have to press the __Delete__ key
+    have to write the second character or press `<S-Tab>`. If you only want the
+    first char, you only have to press the __Delete__ key
 
     ![smartinput](http://joedicastro.com/static/pictures/smartinput_en.gif "smartinput")
 
@@ -743,8 +724,7 @@ __Unite__
 - *insert a breakpoint* insert a breakpoint in python code. If we have `ipython`
   or `pudb` installed, it will use one of those instead the python `pdb`
 
-- *toggle pylint revision* toggle the code revision by [pylint][pylint] each
-  time that the file is saved
+- *pylint check* do a code revision by [pylint][pylint] by demand
 
   [pylint]: http://www.pylint.org/
 
@@ -798,12 +778,12 @@ __Unite__
   pymode one is that this one allow us to search in the external libraries
   documentation
 
-- *syntastic check* and *syntastic errors* are two options of Syntastic, a
-  plugin for code quality (syntax revision) for various programming and markup
-  languages (python, ruby, lua, haskell, css, html, js, json, ...) via external
-  tools (these tools are required). Show the syntax errors in the signs column
-  (gutter). Also shows the total of errors and the number line of the first in
-  the status line
+- *syntastic toggle*,  *syntastic check & errors* are two options
+  of Syntastic, a plugin for code quality (syntax revision) for various
+  programming and markup languages (python, ruby, lua, haskell, css, html, js,
+  json, ...) via external tools (these tools are required). Show the syntax
+  errors in the signs column (gutter). Also shows the total of errors and the
+  number line of the first in the status line
 
 - *list virtualenvs* use the virtualenv plugin to list the python virtualenvs.
 
@@ -934,12 +914,12 @@ __Unite__
     > - `P` jump to the commit tagged as `HEAD`
 
 
-- The rest of the entries are typical git commands which are executed via the
-  __Fugitive__ tool. Fugitive is a git wrapper, so good that allows us to manage
-  git repositories without leave Vim. It's so complete and powerful that
-  requires a certain amount of time to get used to it and get total control over
-  its particular interface. The author, Tim Pope, says that about it: "A Git
-  wrapper so awesome, it should be illegal" and is almost true.
+- Almost of the rest of the entries are typical git commands which are executed
+  via the __Fugitive__ tool. Fugitive is a git wrapper, so good that allows us
+  to manage git repositories without leave Vim. It's so complete and powerful
+  that requires a certain amount of time to get used to it and get total control
+  over its particular interface. The author, Tim Pope, says that about it: "A
+  Git wrapper so awesome, it should be illegal" and is almost true.
 
       ![fugitive](http://joedicastro.com/static/pictures/fugitive_en.png "fugitive")
 
@@ -962,7 +942,7 @@ __Unite__
 
         > - `ca` do a commit which add the new changes to the previous commit,
         >   useful when we forgot add something in a commit. Same as `git commit
-        >   --ammend`
+        >   --amend`
 
         > - `D` make a diff between the current version and the index one, using
         >   vimfiler via the `:Gdiff` command
@@ -1101,6 +1081,32 @@ __Unite__
     using it. And is very advisable to read the help to get a global vision of
     it.
 
+- *github dashboard* and *github activity* are two options to browse events at
+  GitHub. With the first one we can browse the GitHub Dashboard of a given user.
+  The last one allow us to view the public activity of a given user or repository.
+  There is a limit of 60 calls/hour on the GitHub API without authentication.
+
+    ![gh dashboard](http://joedicastro.com/static/pictures/gh_dashboard.png "gh dashboard")
+
+    > __Mappings__
+
+    > - `<Tab>` & `<S-Tab>` to navigate back and forth through the links
+    > - `<Enter>` open a link in the browser
+    > - R refresh the window
+    > - q close the window
+
+- *github issues & PR* open the external ncurses application [shipit][shpt]
+  that is an interface for GitHub issues and pull requests. The application is
+  still in development but is an amazing way to manage GitHub issues without
+  leaving Vim and the terminal. If you are inside a git repository that have a
+  remote in GitHub, it will open the app for that repository.
+
+    ![shipit](http://joedicastro.com/static/pictures/shipit.png "shipit")
+
+  [shpt]: https://github.com/alejandrogomez/shipit
+
+
+
 ### Other tools
 
 - *vim-gitgutter* show the changes that are made in the buffer versus the git
@@ -1203,7 +1209,7 @@ __Unite__
 - *create hue gradation between two colors* crate a color gradation based in a
   parameter (hue, saturation, ...)
 
-    > __Mappigns in the ColorV window__
+    > __Mappings in the ColorV window__
 
     > - `z/Z` resize the window
     > - `?` show the mappings ciclically
@@ -1252,28 +1258,35 @@ of individual files
 
 __Hexadecimal Editor__
 
-This is actually a wrapper around the tool `xxd` to visualize the file in an
-hexadecimal binary mode.
+For this I use the Vinarise plugin, a well thought hexadecimal editor for Vim.
 
 No play with this, is not a toy, this is for grown ups only! If you do not know
 what you are doing, keep your hands out of it! :smile: If you are all thumbs,
-this tool is a sure candidate for a disaster. One tip: remember to come back to
-the ASCII mode before saving the file.
+this tool is a sure candidate for a disaster.
 
-![hex](http://joedicastro.com/static/pictures/hexman_en.gif "hex")
+![hex](http://joedicastro.com/static/pictures/vinarise_en.png "hex")
 
 > __Mappings__
 
-> - `<F6>` toggle the Hexadecimal/ASCII modes
-> - `<leader>hd` delete the Hexadecimal character under the cursor
-> - `<leader>hi` insert a ASCII character before the cursor
-> - `<leader>hg` goto hex offset
-> - `<leader>hn` or `<Tab>` goto next hex offset
-> - `<leader>hp` or `<Shift><Tab>` goto previous hex offset
-> - `<leader>ht` move the cursor between the Hexadecimal and ASCII areas
-> - `?`          show help
+- `<F6>` entry into the Hexadecimal mode
+- `V`  edit the file in ASCII mode with Vim (Vinarise keeps opened)
+- `q`  hide Vinarise
+- `Q`  quit Vinarise
+- `<C-G>` show current position
+- `r`  change current address
+- `R`  overwrite from current address
+- `gG` move to input address
+- `go` move by offset address
+- `/`  search binary value
+- `?`  search binary value reverse
+- `g/` search string value
+- `g?` search string value reverse
+- `e/` search regular expression (search only forward)
+- `E`  change encoding
+- `<C-L>` redraw
+- `g<C-L>` reload
 
-## Internalization
+## Internationalization
 
 __Translate .po files__
 
@@ -1344,9 +1357,6 @@ The first entry is already commented at the beginning of this document
 - *launch executable* launch an executable from a list, in a similar behavior as
   `dmenu`
 
-- *clear powerline cache* to clean the Powerline cache to reflect the changes
-  made if needed
-
 ## Prerequisites
 
 __Vim__
@@ -1361,8 +1371,17 @@ You can compile Vim from source if your distribution does not offer a package
 that fits those requirements. You only have to configure it with the adequate
 parameters, something like this:
 
-    $ ./configure --with-features=huge --enable-gui=gnome2
-    --enable-luainterp=yes +--enable-pythoninterp=yes --enable-rubyinterp=yes
+    $ hg clone https://code.google.com/p/vim/ vim
+    $ cd vim
+    $ ./configure --with-features=huge \
+                  --enable-gui=gnome2 \
+                  --enable-luainterp=yes \
+                  --enable-pythoninterp=yes \
+                  --enable-rubyinterp=yes \
+                  --enable-perlinterp=yes \
+                  --enable-cscope
+    $ make
+    $ sudo make install
 
 __Programs__
 
@@ -1393,16 +1412,19 @@ config, those are the needed:
 
 __Font__
 
-The __Dejavu Sans for Powerline__ font is required for the Powerline plugin. It
-can be founded in this same repository under the `../fonts` folder.
+The __Dejavu Sans for Powerline__ font is required for the vim-airline plugin.
+It can be founded in this same repository under the `../fonts` folder. You can
+find more fonts ready for powerline in this repository, [powerline
+fonts][pwrfnts]
 
   [ctags]: http://ctags.sourceforge.net/
   [ag]: https://github.com/ggreer/the_silver_searcher
   [ack]: http://beyondgrep.com/
   [grep]:http://www.gnu.org/software/grep/
   [git]: http://git-scm.com/
+  [pwrfnts]: https://github.com/Lokaltog/powerline-fonts
 
-## Alternative configuration
+## Alternative settings
 
 Maybe this setup can be helpful to you and decide to clone/fork it, but you
 don't like all the settings. Well, in this case you still can clone this config
@@ -1410,7 +1432,25 @@ and customize it as you want without loose the evolution of mine.
 
 To do this I added the possibility to read an additional file to load your
 custom settings. This file is located by default in this path
-`~/.vim/custom.vim`
+`~/.vim/custom.vim`. Those settings override the similar ones in the .vimrc file
+
+__Example__
+
+I like the folding setting by default in python files, but if you do not like
+it, you can add this line to that file:
+
+```VimL
+let g:pymode_folding = 0
+```
+
+At the same time I have all the folds closed by default, if you prefer open the
+file with all the folds opened, you can add this other line (currently is the
+default):
+
+```VimL
+au FileType python setlocal foldlevel=1000
+```
+
 
 ## Plugins & Colorschemes
 
@@ -1419,13 +1459,13 @@ custom settings. This file is located by default in this path
 - __coveragepy.vim__ <https://github.com/alfredodeza/coveragepy.vim>
 - __crontab.vim__ <https://github.com/vim-scripts/crontab.vim>
 - __csapprox__ <https://github.com/godlygeek/csapprox>
+- __delimitMate__ <https://github.com/Raimondi/delimitMate>
 - __DirDiff.vim__ <http://github.com/joedicastro/DirDiff.vim>
 - __easydigraph.vim__ <https://github.com/Rykka/easydigraph.vim>
 - __emmet-vim__ <https://github.com/mattn/emmet-vim>
 - __gitv__ <https://github.com/gregsexton/gitv>
 - __gundo.vim__ <https://github.com/sjl/gundo.vim>
 - __harlequin__ <https://github.com/nielsmadan/harlequin>
-- __hexman.vim__ <https://github.com/vim-scripts/hexman.vim>
 - __html5.vim__ <https://github.com/othree/html5.vim>
 - __indentLine__ <https://github.com/Yggdroot/indentLine>
 - __JSON.vim__ <https://github.com/vim-scripts/JSON.vim>
@@ -1447,23 +1487,22 @@ custom settings. This file is located by default in this path
 - __unite-mark__ <https://github.com/tacroe/unite-mark>
 - __unite-outline__ <https://github.com/Shougo/unite-outline>
 - __unite-quickfix__ <https://github.com/osyo-manga/unite-quickfix>
-- __unite-session__ <https://github.com/Shougo/unite-session>
 - __unite.vim__ <https://github.com/Shougo/unite.vim>
 - __utl.vim__ <https://github.com/vim-scripts/utl.vim>
+- __vim-airline__ <https://github.com/bling/vim-airline>
 - __vim-characterize__ <https://github.com/tpope/vim-characterize>
 - __vim-commentary__ <https://github.com/tpope/vim-commentary>
 - __vim-fugitive__ <https://github.com/tpope/vim-fugitive>
 - __vim-gitgutter__ <https://github.com/airblade/vim-gitgutter>
 - __vim-github256__ <https://github.com/joedicastro/vim-github256>
+- __vim-github-dashboard__ <https://github.com/junegunn/vim-github-dashboard>
 - __vim-markdown__ <https://github.com/joedicastro/vim-markdown>
 - __vim-markdown-extra-preview__ <https://github.com/joedicastro/vim-markdown-extra-preview>
 - __vim-molokai256__  <https://github.com/joedicastro/vim-molokai256>
 - __vim-multiple-cursors__ <https://github.com/terryma/vim-multiple-cursors>
 - __vim-pentadactyl__ <https://github.com/joedicastro/vim-pentadactyl>
-- __vim-powerline__ <https://github.com/joedicastro/vim-powerline>
 - __vim-repeat__ <https://github.com/tpope/vim-repeat>
 - __vim-signature__ <https://github.com/kshenoy/vim-signature>
-- __vim-smartinput__ <https://github.com/kana/vim-smartinput>
 - __vim-speeddating__ <https://github.com/tpope/vim-speeddating>
 - __vim-surround__ <https://github.com/tpope/vim-surround>
 - __vim-textobj-entire__ <https://github.com/kana/vim-textobj-entire>
@@ -1479,6 +1518,7 @@ custom settings. This file is located by default in this path
 - __vimfiler__ <https://github.com/Shougo/vimfiler.vim>
 - __vimproc__ <https://github.com/Shougo/vimproc.vim>
 - __vimux__ <https://github.com/benmills/vimux>
+- __vinarise.vim__ <https://github.com/Shougo/vinarise.vim>
 - __webapi-vim__ <https://github.com/mattn/webapi-vim>
 - __winresizer__ <https://github.com/jimsei/winresizer>
 - __zoomwintab.vim__ <https://github.com/vim-scripts/zoomwintab.vim>
