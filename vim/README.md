@@ -195,7 +195,7 @@ These are the menu entries in detail:
 - *search* searches plugins by name on vim.org & GitHub (duplicates prone)
 
 - *install* installs all the plugins already present in the `.vimrc` file or in
-  the `direct_bundles.vim` file that are not yet installed
+  the `extra_bundles.vim` file that are not yet installed
 
 - *check* checks if all the plugins are already installed, and if not, prompt
   for their installation
@@ -207,11 +207,11 @@ These are the menu entries in detail:
 
 - *list* lists all the installed plugins
 
-- *direct edit* edits the `~/.vim/bundle/.neobundle/direct_bundles.vim` file
+- *direct edit* edits the `~/.vim/bundle/.neobundle/extra_bundles.vim` file
   where NeoBundle stores those plugins installed directly (e.g. via NeoBundle
   search)
 
-> __Plugins updating__
+> __Plugins updating weakness__
 
 > Since we often install plugins from repositories, we are exposed to error-
 > prone updates. Once in a while, a plugin update introduces a bug and you end up
@@ -221,11 +221,128 @@ These are the menu entries in detail:
 > A way to avoid this is by using symbolic links and backups of our vim folder.
 > If we made a backup of our vim config before an update, is easy to restore it
 > to a previous stable state without much effort. But this is tedious and
-> error-prone too. And alternative is managing this via NeoBundle. We can use
-> the revision lock feature to specify what revision we want to install or even
-> say to NeoBundle that a plugin should not be updated. But it is not a perfect
-> solution either, and very manual. Maybe in a future, we could do plugin
-> rollbacks...
+> error-prone too.
+
+> A better alternative is managing this via NeoBundle. We can use the "revision
+> lock" feature to specify what revision we want to install or even say to
+> NeoBundle that a plugin should not be updated. If we combine this feature with
+> the update log file we can manage this situation in a more properly way. Let
+> me show an example of how to do this:
+
+> Suppose that in the last update of a plugin (from the repository) it comes
+> with a nasty error as an "extra gift". And due this error we have now a not
+> working Vim configuration. If we did this update via the Neobundle `update`
+> command and we are using this configuration, we have a info file where this
+> actions are registered. Let's take a look to this file,
+> `~/.vim/bundle/.neobundle/install_info`:
+
+> *The format of the file is not very human readable, but is almost a JSON file,
+> so with a few transformations, we had a very nice document to look at.
+> There are the transformations that I'll apply to this document:*
+
+>     dd                        " delete the first line
+>     :%s/'/"/g                 " substitute `'` for `"` to obey the JSON standard
+>     :%!python -m json.tool    " an easy way to prettify the format
+>     :set ft=json              " set the vim filetype to json
+>     zR                        " unfold all
+
+>  So let's take a look to a plugin, the Syntastic one for instance:
+
+>     ...
+>      "syntastic": {
+>          "checked_time": 1389635495,
+>          "installed_path": "/home/joedicastro/.vim/bundle/syntastic",
+>          "installed_uri": "https://github.com/scrooloose/syntastic.git",
+>          "revisions": {
+>              "1388823825": "2d9ff2457f57f4c43d7dd6d911003b7ce07588f6",
+>              "1389610724": "f23ddae1a7982b40dbfbe55033c1817480f0a0ed"
+>          },
+>          "updated_time": "1389610724"
+>      },
+>     ...
+
+> In the `revisions` object we have two members in which the key is a date in
+> UNIX Time format and the value is a git SHA hash that matches to a unique
+> revision.  The Unix time can be very helpful to determine what revision is
+> more appropriate to restore if we know when approximately the plugin still
+> worked. To convert the UNIX time to a more human readable format, we can do
+> something like this:
+
+>     # create a temporal mapping (ISO 8061 time)
+>     :vnoremap <F3> "=strftime("%FT%T%z", @*)<CR>P
+
+> Then we only have to select the unix time which want to convert and press `<F3>`.
+> From `1389610724` we get `2014-01-13T11:58:44+0100`
+
+
+> What you can see there, in that file, is that two updates were made and the
+> last one is the current revision. So the current revision installed is the one
+> which `git SHA` begins with `f23ddae1a7` and a previous revision that was
+> `2d9ff2457f`.  If we are certain that the previous version didn't have that
+> error, we can use now the "revision lock" feature of NeoBundle to restore a
+> previous version.
+
+> If in the `~/.vimrc` file we have this line:
+
+>     NeoBundle 'scrooloose/syntastic'
+
+> We can now lock the plugin revision with this:
+
+>     NeoBundle 'scrooloose/syntastic' ,{ 'rev' : '2d9ff2457f'}
+
+> When we save the file, we are asked to install the plugins, if we say 'yes'
+> then we are using now a previous revision of the plugin. (This can be made too
+> at Vim startup time with this configuration or invoking the `NeoBundleCheck`
+> command). Before, we had this directory tree in the `bundle` directory:
+
+>     ...
+>     |-- summerfruit256.vim
+>     |-- syntastic
+>     |-- ultisnips
+>     ...
+
+> Now, we have this current directory tree:
+
+>     ...
+>     |-- summerfruit256.vim
+>     |-- syntastic
+>     |-- syntastic_2d9ff2457f
+>     |-- ultisnips
+>     ...
+
+> With a new directory storing the plugin at the specified revision.  So we have
+> now a working Vim configuration again, an we can keep working with that
+> plugin's revision all the time we want. That can be done in a few minutes, and
+> we keep working as normally as before the update. And using this way we only
+> have to lock that plugin and still enjoying the new features that other
+> plugins maybe have added in the same update.
+
+> If after certain time we want to go back to the master branch of the plugin
+> and see if there is a new revision that solve that error or/and add new
+> features, we can do it like this:
+
+>      NeoBundle 'scrooloose/syntastic', { 'rev' : 'master'}
+
+> But this way have a minor inconvenient, that creates a new bundle directory
+> for this revision:
+
+>     ...
+>     |-- summerfruit256.vim
+>     |-- syntastic
+>     |-- syntastic_2d9ff2457f
+>     |-- syntastic_master
+>     |-- ultisnips
+>     ...
+
+> So is better to do it like this, simply deleting the revision flag and
+> restoring the previous line, and not new directory is added:
+
+>      NeoBundle 'scrooloose/syntastic'
+
+> By the way, you can remove all unused directories using the `NeoBundleClean`
+> command. So, that's it, is more simple that appears and save us a lot of
+> headaches.
+
 
 ## Colorschemes
 
@@ -443,18 +560,6 @@ easily.
     >
     > - `<Leader>dd {motion}` turns in digraph the motion selected text
 
-- __multiple cursors__ this allow us to edit the same visual selection in
-  multiple locations at the same time. It's like a interactive search & replace
-
-    ![multiple cursors](http://joedicastro.com/static/pictures/multiple_cursors_en.gif "multiple cursors")
-
-    > __Mappings__
-
-    > - `<C-N>` turn on the multiple cursors for the current word or visual
-    >   selection. Press it again to find the next occurrence & move to it
-    > - `<C-X>` skip the current position and move to the next one if it exists
-    > - `<C-P>` deselect the current position and move back to the previous one
-    > - `<ESC>` turn off the multiple cursors
 
 - __vim-transpose__ transpose rows & columns. For certain kind of files, like
   *CSV*, it can be really helpful to deal with them. It works in visual mode.
@@ -1473,12 +1578,12 @@ au FileType python setlocal foldlevel=1000
 - __harlequin__ <https://github.com/nielsmadan/harlequin>
 - __html5.vim__ <https://github.com/othree/html5.vim>
 - __indentLine__ <https://github.com/Yggdroot/indentLine>
-- __JSON.vim__ <https://github.com/vim-scripts/JSON.vim>
 - __junkfile.vim__ <https://github.com/Shougo/junkfile.vim>
 - __loremipsum__ <https://github.com/vim-scripts/loremipsum>
 - __molokai__ <https://github.com/tomasr/molokai>
 - __neobundle.vim__ <https://github.com/Shougo/neobundle.vim>
 - __neocomplete.vim__ <https://github.com/Shougo/neocomplete.vim>
+- __neocomplete-ultisnips__ <https://github.com/RyanPineo/neocomplete-ultisnips>
 - __po.vim--gray__ <https://github.com/vim-scripts/po.vim--gray>
 - __python-mode__ <https://github.com/klen/python-mode>
 - __summerfruit256.vim__ <https://github.com/vim-scripts/summerfruit256.vim>
@@ -1503,10 +1608,10 @@ au FileType python setlocal foldlevel=1000
 - __vim-github256__ <https://github.com/joedicastro/vim-github256>
 - __vim-github-dashboard__ <https://github.com/junegunn/vim-github-dashboard>
 - __vim-isort__ <https://github.com/fisadev/vim-isort>
+- __vim-json__ <https://github.com/elzr/vim-json>
 - __vim-markdown__ <https://github.com/joedicastro/vim-markdown>
 - __vim-markdown-extra-preview__ <https://github.com/joedicastro/vim-markdown-extra-preview>
 - __vim-molokai256__  <https://github.com/joedicastro/vim-molokai256>
-- __vim-multiple-cursors__ <https://github.com/joedicastro/vim-multiple-cursors>
 - __vim-pentadactyl__ <https://github.com/joedicastro/vim-pentadactyl>
 - __vim-repeat__ <https://github.com/tpope/vim-repeat>
 - __vim-signature__ <https://github.com/kshenoy/vim-signature>

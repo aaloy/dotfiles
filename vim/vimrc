@@ -146,6 +146,7 @@ NeoBundle 'Shougo/vinarise.vim'
 
 " Autocompletion
 NeoBundle 'Shougo/neocomplete.vim'
+NeoBundle 'RyanPineo/neocomplete-ultisnips'
 " A Python plugin
 NeoBundleLazy 'klen/python-mode', {'autoload': {'filetypes': ['python']}}
 " Admin virtualenvs
@@ -167,7 +168,7 @@ NeoBundle 'SirVer/ultisnips'
 
 " Syntax {{{
 
-NeoBundleLazy 'vim-scripts/JSON.vim', {'autoload': {'filetypes': ['json']}}
+NeoBundleLazy 'elzr/vim-json', {'filetypes' : 'json'}
 NeoBundleLazy 'vim-scripts/po.vim--gray', {'autoload': {'filetypes': ['po']}}
 NeoBundleLazy 'joedicastro/vim-pentadactyl', {
             \ 'autoload': {'filetypes': ['pentadactyl']}}
@@ -215,8 +216,6 @@ NeoBundle 'kana/vim-textobj-lastpat' " a/, i/, a?, i?
 NeoBundle 'kana/vim-textobj-line' " al, il
 NeoBundle 'kana/vim-textobj-underscore' " a_, i_
 NeoBundle 'kana/vim-textobj-user'
-" multiple cursors
-NeoBundle 'joedicastro/vim-multiple-cursors'
 
 " }}}
 
@@ -905,7 +904,15 @@ if !exists('g:neocomplete#sources#omni#input_patterns')
     let g:neocomplete#sources#omni#input_patterns = {}
 endif
 
-let g:neocomplete#sources#omni#input_patterns.python='\h\w*\|[^. \t]\.\w*'
+" let g:neocomplete#sources#omni#input_patterns.python='\h\w*\|[^. \t]\.\w*'
+" let g:neocomplete#sources#omni#input_patterns.python='[^. \t]\.\w*'
+let g:neocomplete#sources#omni#input_patterns.python='\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*'
+
+" }}}
+
+" Neobundle {{{
+
+let g:neobundle#log_filename = $HOME.'/.vim/tmp/neobundle.log'
 
 " }}}
 
@@ -1226,7 +1233,7 @@ let g:unite_source_menu_menus.neobundle.command_candidates = [
     \['▷ neobundle list',
         \'Unite output:NeoBundleList'],
     \['▷ neobundle direct edit',
-        \'NeoBundleDirectEdit'],
+        \'NeoBundleExtraEdit'],
     \]
 nnoremap <silent>[menu]n :Unite -silent -start-insert menu:neobundle<CR>
 " }}}
@@ -1667,16 +1674,7 @@ au BufRead,BufNewFile *.html set nowrap
 
 " JSON {{{ -------------------------------------------------------------------
 
-" autocmd BufNewFile,BufRead *.json set ft=javascript
-autocmd BufNewFile,BufRead *.json set ft=json
-
 augroup json_autocmd
-  autocmd!
-  autocmd FileType json set autoindent
-  autocmd FileType json set formatoptions=tcq2l
-  autocmd FileType json set textwidth=78 shiftwidth=2
-  autocmd FileType json set softtabstop=2 tabstop=8
-  autocmd FileType json set expandtab
   autocmd FileType json set foldmethod=syntax
 augroup END
 
