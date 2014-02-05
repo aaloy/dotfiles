@@ -2,6 +2,83 @@
 #                             Python Snippets                             #
 ###########################################################################
 
+############
+#  COMMON  #
+############
+
+global !p
+
+import os
+import glob
+from subprocess import Popen, PIPE
+
+def get_output(cmd):
+    output = Popen(
+        cmd,
+        stdout=PIPE,
+        stderr=PIPE,
+        shell=True
+    ).stdout.read().strip()
+
+    return output
+
+
+def get_vcs_username(path):
+
+    directory = os.path.dirname(path)
+    vcs = glob.glob('.??*')
+
+    vcs_to_check = {
+        '.git': {
+            'cmd': 'git -C {0} rev-parse --show-toplevel'.format(directory),
+            'luser': 'git -C {0} config --get user.name'.format(directory),
+            'lemail': 'git -C {0} config --get user.email'.format(directory),
+            'guser': 'git config --get user.name',
+            'gemail': 'git config --get user.email'
+        },
+        '.hg': {
+            'cmd': 'hg -R {0} root'.format(directory),
+            'luser': 'hg -R {0} showconfig ui.username'.format(directory),
+            'lemail': '',
+            'guser': 'hg showconfig ui.username',
+            'gemail': ''
+        },
+        '.bzr': {
+            'cmd': 'bzr root {0}'.format(directory),
+            'luser': 'bzr whoami --directory {0}'.format(directory),
+            'lemail': '',
+            'guser': 'bzr whoami',
+            'gemail': ''
+        },
+
+    }
+
+    for i in vcs:
+        # try to get the local values
+        try:
+            cmd_output = get_output(vcs_to_check[i]['cmd'])
+        except:
+            cmd_output = ''
+        if cmd_output and directory == cmd_output:
+            try:
+                user = get_output(vcs_to_check[i]['luser'])
+                email = get_output(vcs_to_check[i]['lemail'])
+                return '{0} <{1}>'.format(user, email) if email else user
+            except:
+                return ''
+    else:
+        for i in vcs_to_check.keys():
+            # try to get the global values instead
+            try:
+                user = get_output(vcs_to_check[i]['guser'])
+                email = get_output(vcs_to_check[i]['gemail'])
+                return '{0} <{1}>'.format(user, email) if email else user
+            except:
+                return ''
+
+endglobal
+
+
 ##############
 #  New File  #
 ##############
@@ -11,21 +88,21 @@ snippet script "Template for new script" !b
 # -*- coding: utf8 -*-
 
 """
-`!p snip.rv =snip.rv =  fn`
+`!p snip.rv = fn`
 
 ${1}
 
 """
 
-__author__ = "joe di castro <joe@joedicastro.com>"
-__license__ = "MIT"
+__author__ = "${2:`!p snip.rv = get_vcs_username(path)`}"
+__license__ = "${3:MIT}"
 __date__ = "`date +%Y-%m-%d`"
 __version__ = "0.1"
 
 try:
     import sys
     import os
-    ${2}
+    ${4}
 except ImportError:
     print('''
           An error found importing one module:
@@ -42,7 +119,7 @@ except ImportError:
 
 def main():
     """Main section."""
-    ${3:pass}
+    ${5:pass}
 
 if __name__ == '__main__':
     main()
