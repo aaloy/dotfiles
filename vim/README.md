@@ -1,7 +1,7 @@
 # My Vim Configuration
 
 
-__Version 1.5  (2013-12-02)__
+__Version 1.6  (2014-02-06)__
 
 The purpose of this document is to compile all the customizations available in
 my vim configuration, to help me reorganize them properly, and as a sort of
@@ -86,6 +86,15 @@ menus through `<LocalLeader>` key mappings.
   image shows a Unite menu for managing a git repository:
 
     ![unite_git](http://joedicastro.com/static/pictures/unite_git_en.gif "unite_git")
+
+ - __Commands__ using a third plugin, Unite is able to help in the
+   auto-completion and look for commands in the command line. We only have to
+   proceed as always, using `:` the first letters of the command and instead of
+   use `<Tab>` to auto-complete the command, use `<C-O>` to use a Unite menu
+   where we can select the right command using the Unite auto-completion (with
+   fuzzy-logic)
+
+    ![unite_cmdmatch](http://joedicastro.com/static/pictures/unite_cmdmatch.png "unite_cmdmatch")
 
 Unite has a master menu that shows all the custom menus that we have created,
 allowing us to access them and see the mapping associated with each one. This
@@ -436,6 +445,11 @@ __Unite__
   vertical column that indicates wrapping threshold turns green when the
   automatic wrapping is disabled
 
+- *toggle auto-complete word auto-selection* enable/disable the auto selection
+  of the optimal word from the auto-completion pop-up dialog. This option is
+  disabled by default to allow a fast writing/edition without obstacles. This is
+  optimal for very situations, but can be enabled again with this entry.
+
 - *show hidden chars* show the hidden chars, those that are not printable
   (tabs, carriage returns, spaces, ...)
 
@@ -547,9 +561,15 @@ easily.
 
     > __Mappings__
 
+    > - `<Leader>ea` conmute the auto-completion state
+        - The possible 3 states are: 
+          `candidate manual-selected → disabled → candidate auto-selected`
+    > - `<C-N>`   go to the first/next word (below) in the option list
+    > - `<C-P>`   go to the last/previous word (above) in the option list
+
+    > __Auto-selection active__
+
     > - `<CR>`    insert the selected word
-    > - `<C-N>`   go to the next word (below) in the option list
-    > - `<C-P>`   go to the previous word (above) in the option list
 
 - __easydigraph__ easily insert digraphs, especially when trying to insert
   several simultaneously
@@ -1223,6 +1243,92 @@ __Unite__
   repository index. It makes a `git diff` and shows the status
   (changed/added/deleted) of each line in the gutter (signs column).
 
+## DBMS/SQL
+
+![dbext](http://joedicastro.com/static/pictures/dbext.gif "dbext")
+
+The DBext plugin provides support to interact with various DBMS. The Databases
+supported are: *Sybase SQL Anywhere, Sybase UltraLite, Sybase ASE, SAP HANA,
+Oracle, Oracle RDB, SQL Server, MySQL, PostgreSQL, DB2, Firebird, Ingres,
+Interbase, SQLite* and other databases supported by the Perl DBI drivers. The
+SQLite DB is supported directly.
+
+Is a very useful plugin, but I recommend to read the tutorial first (`:h
+dbext-tutorial` <vimhelp:dbext-tutorial>) to get an idea of how it works.
+
+![unite db](http://joedicastro.com/static/pictures/unite_menu_db_en.png "unite db")
+
+ __Unite__
+
+- `<localleader>S` or `:Unite menu:db` show the git menu
+
+### Menu
+
+- *Execute SQL* allows us to write a SQL statement and execute it in the current
+  database.
+
+- *Execute SQL (with limit of n rows)* same as above, but allow to limit the
+  output to the number of columns specified.
+
+- *SQL ... statements* these entries are for create and execute SQL statements
+  where the first word is automatically inserted.
+
+- *List all ...* to list all Tables, Procedures, Views and Variables in the
+  current database.
+
+- *DBext Get Options* get all the DBext options (settings).
+
+- *DBext Set Option* set a DBext option (setting).
+
+- *DBext Set Var* set a Variable.
+
+- *DBext Set Buffer Parameters* to set all the parameters to the current buffer.
+
+- *List all Connections* list all database connections. Only for DBI/ODBC
+  connections.
+
+- *Commit*, *Rollback*, *Connect* & *Disconnect* to do those actions over the
+  current Database connection. Only for DBI/ODBC
+
+> __Mappings__
+
+> __Normal__ mode
+
+> - `<Leader>Se` execute SQL query under the cursor (properly terminated by `;`)
+> - `<Leader>SE` execute SQL query under the cursor with a limit of rows
+>       (properly terminated by `;`)
+> - `<Leader>Sea` execute a range of lines
+> - `<Leader>Sel` execute the current line
+> - `<Leader>Sep` execute the previous range
+> - `<Leader>St` select * from the table under the cursor
+> - `<Leader>ST` select * from the table under the cursor with a limit of rows
+> - `<Leader>Stw` select * from the table under the cursor with a where clause
+> - `<Leader>Sta` ask for a table and do a select * from it
+> - `<Leader>Sd` describe the table under the cursor
+> - `<Leader>Sda` ask for a table and describe it
+> - `<Leader>Sp` describe the procedure under the cursor
+> - `<Leader>Spa` ask for a procedure and describe it
+> - `<Leader>Slt` display a list of tables with a specified prefix
+> - `<Leader>Slp` display a list of procedures/packages/functions with a
+>       specified prefix
+> - `<Leader>Slv` display a list of views with a specified prefix
+> - `<Leader>Slc` display a list of columns for a given table
+> - `<Leader>Svr` display a list of all buffer specific variables
+
+> ... and the rest of standard DBext mappings using the prefix `S` instead of
+> `s`
+
+> __Visual__ mode
+
+> - `<Leader>Se` execute SQL visually selected
+> - `<Leader>St` select * from the table visually selected
+> - `<Leader>Sdt` describe the table visually selected
+> - `<Leader>Sdp` describe the procedure visually selected
+> - `<Leader>Slt` display a list of tables with a specified prefix
+> - `<Leader>Slp` display a list of procedures/packages/functions with a
+>       specified prefix
+> - `<Leader>Slv` display a list of views with a specified prefix
+> - `<Leader>Slc` display a list of columns for a given table
 
 ## Web Development
 
@@ -1501,6 +1607,7 @@ You need also several programs to enjoy a complete experience:
   as `exuberant-ctags`
 - __[ag][ag]__, __[ack][ack]__ or __[grep][grep]__ for regex searches of files
 - __[git][git]__ for git repositories administration
+- __[isort][isort]__ for the vim-isort plugin (to sort imports in python)
 
 __Optional programs__
 
@@ -1533,6 +1640,8 @@ fonts][pwrfnts]
   [grep]:http://www.gnu.org/software/grep/
   [git]: http://git-scm.com/
   [pwrfnts]: https://github.com/Lokaltog/powerline-fonts
+  [isort]: https://github.com/timothycrosley/isort
+
 
 ## Alternative settings
 
@@ -1569,6 +1678,7 @@ au FileType python setlocal foldlevel=1000
 - __coveragepy.vim__ <https://github.com/alfredodeza/coveragepy.vim>
 - __crontab.vim__ <https://github.com/vim-scripts/crontab.vim>
 - __csapprox__ <https://github.com/godlygeek/csapprox>
+- __dbext.vim__ <https://github.com/joedicastro/dbext.vim>
 - __delimitMate__ <https://github.com/Raimondi/delimitMate>
 - __DirDiff.vim__ <http://github.com/joedicastro/DirDiff.vim>
 - __easydigraph.vim__ <https://github.com/Rykka/easydigraph.vim>
@@ -1590,6 +1700,7 @@ au FileType python setlocal foldlevel=1000
 - __syntastic__ <https://github.com/scrooloose/syntastic>
 - __ultisnips__ <https://github.com/SirVer/ultisnips>
 - __unite-colorscheme__ <https://github.com/ujihisa/unite-colorscheme>
+- __unite-cmdmatch__ <https://github.com/majkinetor/unite-cmdmatch>
 - __unite-filetype__ <https://github.com/osyo-manga/unite-filetype>
 - __unite-fold__ <https://github.com/osyo-manga/unite-fold>
 - __unite-help__ <https://github.com/tsukkee/unite-help?>
